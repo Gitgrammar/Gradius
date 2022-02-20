@@ -37,7 +37,7 @@ class Player(Spclass):
 		if self.x<35 :self.x =35
 		if self.y<35 :self.y =35
 		if self.x>(WIDTH-35) :self.x =WIDTH-35
-		if self.y>(HEIGTH-35) :self.y =HEIGHT-35
+		if self.y>(HEGHT-35) :self.y =HEIGHT-35
 		if keyboard.space!=0 and (self.count %16 )==0:
 			objects.append(Shot(self.x,self.y,0,1))
 			objects.append(Shot(self.x,self.y,30,1))
@@ -83,7 +83,7 @@ def sprite_move(pos, angle ,speed):
 
 def init():
 	global player, objects , bosstimer
-	global titlemode, gameover, stars
+	global titlemode,gameover, stars
 	stars=[]
 	for i in range(10):
 		pos=(random.randrange(WIDTH),random.randrange(HEIGHT))
@@ -92,9 +92,7 @@ def init():
 	player=Player(WIDTH/2, HEIGHT*3/4,0,3)
 	objects.append(player)
 	titlemode=True
-	gameover=0
-	
-  
+gameover=0
 
 def draw():
 	screen.clear()
@@ -103,5 +101,50 @@ def draw():
 
 	if titlemode == True:
 		screen.draw.text("S H O O T I N G  G A M E",left=150, top=240,fontsize=6,color="YELLOW")
-	
+	else:
+		for sp in objects: sp.draw()
+		if gameover>0:
+			screen.draw.text("G A M E O V E R ! !", left=200,top=240, fontsize =64,color="YELLOW")
+def update():
+	global bosstimer,gameover,titlemode
+	if titlemode== True:
+		if keyboard.space: titlemode =False 
+		return
+
+	for i in range(len(stars)):
+		stars[i].y += (i+1)
+		if stars[i].y>HEIGHT: stars[i].y=0
+
+	bosstimer -=1
+	if bosstimer==0:
+		objects.append(BOSS(WIDTH/2,0,0,5))
+	elif bosstimer >0 and random.randrange(100)==0:
+		x= random.randrange(WIDTH-200)+100
+		objects.append(Enemy(x,0,0,4))
+
+	for sp in objects:
+		sp.Update()
+		sp.count+=1
+		if sp.hp<= 0:
+			objects.append(Explosion(sp.x, sp.y,0,0))
+			sp.x= OUTSIDE
+		if sp.x<= -35 or sp.x>(WIDTH+35)or sp.y<-35 or sp.y>(HEIGHT+35):
+			if sp.num == 5: bosstimer=60*20
+			objects.remove(sp)
+	if gameover==0:	
+		if(player in objects)==False:gameover=1
+	else:
+		gameover+=1
+		if gameover>180: init()
+
+charas=[]
+
+charas.append(Characlass("shield3.png",1,False))
+charas.append(Characlass("laserblue01.png",1,False))
+charas.append(Characlass("laserred01.png",99,True))
+charas.append(Characlass("playership1_blue.png",1,False))
+charas.append(Characlass("enemyred1.png",3,True))
+charas.append(Characlass("enemygreen5.png",15,True))
+
+init()
 pgzrun.go()
