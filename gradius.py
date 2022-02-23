@@ -6,23 +6,28 @@ HEIGHT=600
 OUTSIDE=999
 
 class Spclass(Actor):
-	def __init__(self,x,y,angle,num):
-		Actor.__init__(self.charas[num].imagename,(x,y))
-		self.angle=angle
-		self.hp=charas[num].hp
-		self.num=num
-class Explosion():
-	def update(self):
-		self.pos=spritemove(self.pos,self.angle,8)
+		def __init__(self,x,y,angle,num):
+			Actor.__init__(self,charas[num].imagename,(x,y))
+			self.angle=angle
+			self.hp=charas[num].hp
+			self.count = 0
+			self.num=num
 
-		hitbox=Rect((self.x-15,self.y-15),(30,30))
-		for sp in objects:
-			if charas[sp.num].enemy==False or sp.hp==99:
-				continue
-			if sp.colliderect(hitbox):
-				objects.append(Explosion(sp.x,sp.y,0,0))
-				self.hp==-1
-				break
+class Explosion(Spclass):
+	def update(self):
+		if self.count>20 : self.x=OUTSIDE
+
+class Shot(Spclass):		
+		def update(self):
+			self.pos=spritemove(self.pos,self.angle,8)
+			hitbox=Rect((self.x-15,self.y-15),(30,30))
+			for sp in objects:
+				if charas[sp.num].enemy==False or sp.hp==99:
+					continue
+				if sp.colliderect(hitbox):
+					objects.append(Explosion(sp.x,sp.y,0,0))
+					self.hp==-1
+					break
 
 class EnemyShot(Spclass):
 		def update(self):
@@ -44,10 +49,11 @@ class Player(Spclass):
 			objects.append(Shot(self.x,self.y,-30,1))
 			hitbox =Rect((self.x-10,self.y-10),(20,20))	
 			for sp in objects:
-				if sp.colliderect(hitbox):
-					self.hp -= 1
-					sp.hp -=1
-					break
+				if charas[sp.num].enemy==True:
+					if sp.colliderect(hitbox):
+						self.hp -= 1
+						sp.hp -=1
+						break
 
 class Enemy(Spclass):
 	def update(self):
@@ -70,10 +76,10 @@ class Boss(Spclass):
 			objects.append(EnemyShot(self.x,self.y,newangle, 2))
 
 class Characlass:
-	def __init__(self,filename, hp, enemy):
-		self.imagename= filename
-		self.hp= hp
-		self.enemy= enemy
+		def __init__(self,filename, hp, enemy):
+			self.imagename= filename
+			self.hp= hp
+			self.enemy= enemy
 def sprite_move(pos, angle ,speed):
 		x, y=pos
 		rad =math.radians(-90-angle)
