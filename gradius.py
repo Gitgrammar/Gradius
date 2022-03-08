@@ -26,12 +26,13 @@ class Shot(Spclass):
 					continue
 				if sp.colliderect(hitbox):
 					objects.append(Explosion(sp.x,sp.y,0,0))
-					self.hp==-1
+					self.x=OUTSIDE
+					self.hp-=1
 					break
 
 class EnemyShot(Spclass):
 		def update(self):
-			self.pos=spritemove(self.pos,self.angel,4)
+			self.pos=spritemove(self.pos,self.angle,4)
 
 class Player(Spclass):
 	def update(self):
@@ -42,7 +43,7 @@ class Player(Spclass):
 		if self.x<35 :self.x =35
 		if self.y<35 :self.y =35
 		if self.x>(WIDTH-35) :self.x =WIDTH-35
-		if self.y>(HEGHT-35) :self.y =HEIGHT-35
+		if self.y>(HEIGHT-35) :self.y =HEIGHT-35
 		if keyboard.space!=0 and (self.count %16 )==0:
 			objects.append(Shot(self.x,self.y,0,1))
 			objects.append(Shot(self.x,self.y,30,1))
@@ -80,7 +81,8 @@ class Characlass:
 			self.imagename= filename
 			self.hp= hp
 			self.enemy= enemy
-def sprite_move(pos, angle ,speed):
+
+def spritemove(pos, angle ,speed):
 		x, y=pos
 		rad =math.radians(-90-angle)
 		x += (math.cos(rad))*speed
@@ -94,11 +96,12 @@ def init():
 	for i in range(10):
 		pos=(random.randrange(WIDTH),random.randrange(HEIGHT))
 		stars.append(Rect(pos,(3,3)))
+
 	objects= []
 	player=Player(WIDTH/2, HEIGHT*3/4,0,3)
 	objects.append(player)
 	titlemode=True
-gameover=0
+	gameover=0
 
 def draw():
 	screen.clear()
@@ -122,7 +125,7 @@ def update():
 			stars[i].y += (i+1)
 			if stars[i].y>HEIGHT: stars[i].y=0
 
-		bosstimer-=1 
+		bosstimer -= 1
 		if bosstimer==0:
 			objects.append(Boss(WIDTH/2,0,0,5))
 		elif bosstimer >0 and random.randrange(100)==0:
