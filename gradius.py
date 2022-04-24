@@ -38,7 +38,7 @@ class Player(Spclass):
 	def update(self):
 		if keyboard.up	:self.y -=4
 		if keyboard.down	:self.y +=4
-		if keyboard.left	:self.x +=4
+		if keyboard.left	:self.x -=4
 		if keyboard.right	:self.x +=4
 		if self.x<35 :self.x =35
 		if self.y<35 :self.y =35
@@ -60,7 +60,7 @@ class Enemy(Spclass):
 	def update(self):
 		self.x += int((self.count%200)/100)*2-1
 		self.y += 2
-		if random.randomrange(100)!=0: return
+		if random.randrange(100)!=0: return
 		px, py =player.pos
 		newangle =-90 - math.degrees(math.atan2(py-self.y,px-self.x))
 		newsp =EnemyShot(self.x,self.y, newangle,2)
@@ -100,6 +100,7 @@ def init():
 	objects= []
 	player=Player(WIDTH/2, HEIGHT*3/4,0,3)
 	objects.append(player)
+	bosstimer=60*20
 	titlemode=True
 	gameover=0
 
@@ -125,7 +126,7 @@ def update():
 			stars[i].y += (i+1)
 			if stars[i].y>HEIGHT: stars[i].y=0
 
-		bosstimer -= 1
+		bosstimer-=1
 		if bosstimer==0:
 			objects.append(Boss(WIDTH/2,0,0,5))
 		elif bosstimer >0 and random.randrange(100)==0:
